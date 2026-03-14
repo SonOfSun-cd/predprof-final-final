@@ -1,0 +1,9 @@
+*.pyc
+_pycache__/
+node_modules/
+dist/
+.env
+.env.local
+npm-debug.log*
+.DS_Store
+.env

@@ -1,0 +1,31 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
+
+DB_PATH = os.environ.get('DB_PATH', 'data/db1.db')
+engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+class context_manager():
+    def __init__(self):
+        self.db = SessionLocal()
+
+    def __enter__(self):
+        return self.db
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type or exc_value or traceback:
+            self.db.rollback()
+        else:
+            self.db.commit()
+        self.db.close()
