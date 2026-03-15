@@ -17,6 +17,17 @@ export default function Users() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  useEffect(() => {
+    if (!error && !success) return
+
+    const timer = setTimeout(() => {
+      setError('')
+      setSuccess('')
+    }, 5000)
+
+    return () => clearTimeout(timer)
+  }, [error, success])
+
   const loadUsers = async () => {
     setLoading(true)
     setError('')
@@ -112,6 +123,10 @@ export default function Users() {
     } finally {
       setUpdatingUserId(null)
     }
+  }
+
+  const handleDeleteUser = (user) => {
+    // ничего не делаем
   }
 
   return (
@@ -220,18 +235,28 @@ export default function Users() {
                             <option value="admin">admin</option>
                           </select>
                         </td>
-                        <td>
+                        <td className="action-cell">
                           {currentUser?.login === user.login ? (
                             <span className="current-user">Это Вы!</span>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => handleRoleSubmit(user)}
-                              disabled={updatingUserId === userKey}
-                              className="table-button"
-                            >
-                              {updatingUserId === userKey ? 'Сохранение...' : 'Сохранить статус'}
-                            </button>
+                            <div className="action-buttons">
+                              <button
+                                type="button"
+                                onClick={() => handleRoleSubmit(user)}
+                                disabled={updatingUserId === userKey}
+                                className="table-button"
+                              >
+                                {updatingUserId === userKey ? 'Сохранение...' : 'Сохранить'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteUser(user)}
+                                disabled={updatingUserId === userKey}
+                                className="table-button delete-btn"
+                              >
+                                Удалить
+                              </button>
+                            </div>
                           )}
                         </td>
                       </tr>

@@ -52,11 +52,6 @@ export default function Index() {
 
     return (
         <div className="app-container">
-            <div className="header-row">
-                <button className="logout-btn" onClick={handleLogout}>
-                    Выйти из аккаунта
-                </button>
-            </div>
             <div className="file_get_box">
                 <h1>Выберите файл для расшифровки</h1>
                 <div className="file_get">
