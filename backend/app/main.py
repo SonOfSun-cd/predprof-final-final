@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List
 import models, schemas
 import time
+from api import auth_router
 
 for i in range(30):
     try:
@@ -15,16 +16,9 @@ for i in range(30):
         time.sleep(1)
 
 app = FastAPI()
+app.include_router(auth_router.router)
 
 from set_models import done
-
-@app.get("/api/get_data", response_model = List[schemas.API])
-def get_data(
-    db: Session = Depends(get_db),
- ):
-    data = db.query(models.API).all()
-    print(data)
-    return data
 
 
 @app.get("/")
@@ -35,6 +29,5 @@ def root():
 def shutdown_event():
     from database import context_manager
     with context_manager() as db:
-        db.query(models.API).delete()
-        db.commit()
+        pass
     print("база данных убита")
