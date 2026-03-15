@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAuth } from './auth_context.jsx'
 import { useNavigate, Link } from 'react-router-dom'
+import '../../styles.css';
 
 export default function Login() {
   const [Login, setLogin] = useState('')
@@ -22,41 +23,43 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <h2 className="auth-title">Вход</h2>
-        
-        {error && <div className="error-message">{error}</div>}
-        
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label className="form-label">Логин</label>
-            <input
-              type="text"
-              placeholder="Введите логин"
-              value={Login}
-              onChange={(e) => setLogin(e.target.value)}
-              required
-              className="form-input"
-            />
-          </div>
+    <div className="app-container">
+      <div className="auth-container">
+        <div className="auth-box">
+          <h2 className="auth-title">Вход</h2>
           
-          <div className="form-group">
-            <label className="form-label">Пароль</label>
-            <input
-              type="password"
-              placeholder="Введите пароль"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="form-input"
-            />
-          </div>
+          {error && <div className="error-message">{error}</div>}
           
-          <button type="submit" className="form-button">
-            Войти
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label className="form-label">Логин</label>
+              <input
+                type="text"
+                placeholder="Введите логин"
+                value={Login}
+                onChange={(e) => setLogin(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label">Пароль</label>
+              <input
+                type="password"
+                placeholder="Введите пароль"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+            
+            <button type="submit" className="form-button">
+              Войти
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )

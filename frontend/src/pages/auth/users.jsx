@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from './auth_context.jsx'
+import '../../styles.css'
 
 export default function Users() {
   const { token, user: currentUser, loading: authLoading } = useAuth()
@@ -114,124 +115,134 @@ export default function Users() {
   }
 
   return (
-    <div>
-      <h1>Пользователи</h1>
-      <h2>Список пользователей</h2>
+    <div className="app-container">
+      <div className="users-container">
+        <h1 className="page-title">Пользователи</h1>
+        
+        {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
 
-      {loading ? (
-        <p>Загрузка...</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Имя</th>
-              <th>Фамилия</th>
-              <th>Логин</th>
-              <th>Статус</th>
-              <th>Действие</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td colSpan="5">Пользователи не найдены</td>
-              </tr>
-            ) : (
-              users.map((user) => (
-                <tr key={user.id ?? user.login}>
-                  <td>{user.name}</td>
-                  <td>{user.surname}</td>
-                  <td>{user.login}</td>
-                  <td>
-                    <select
-                      value={roleChanges[user.id ?? user.login] ?? user.role ?? 'user'}
-                      onChange={(event) => handleRoleChange(user.id ?? user.login, event.target.value)}
-                      disabled={currentUser?.login === user.login}
-                    >
-                      <option value="user">user</option>
-                      <option value="admin">admin</option>
-                    </select>
-                  </td>
-                  <td>
-                    {currentUser?.login === user.login ? (
-                      <span>Это Вы!</span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => handleRoleSubmit(user)}
-                        disabled={updatingUserId === (user.id ?? user.login)}
-                      >
-                        {updatingUserId === (user.id ?? user.login) ? 'Сохранение...' : 'Сохранить статус'}
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      )}
-
-      <h2>Создать пользователя</h2>
-
-      <form onSubmit={handleSubmit}>
-        <table>
-          <thead>
-            <tr>
-              <th>Имя</th>
-              <th>Фамилия</th>
-              <th>Логин</th>
-              <th>Пароль</th>
-              <th>Действие</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
+        {/* Создание пользователя - сверху */}
+        <div className="create-section">
+          <h2 className="section-title">Создать пользователя</h2>
+          
+          <form onSubmit={handleSubmit} className="create-form">
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Имя</label>
                 <input
-                  id="name"
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
+                  className="form-input"
                   required
                 />
-              </td>
-              <td>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Фамилия</label>
                 <input
-                  id="surname"
                   type="text"
                   value={surname}
                   onChange={(event) => setSurname(event.target.value)}
+                  className="form-input"
                   required
                 />
-              </td>
-              <td>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Логин</label>
                 <input
-                  id="login"
                   type="text"
                   value={login}
                   onChange={(event) => setLogin(event.target.value)}
+                  className="form-input"
                   required
                 />
-              </td>
-              <td>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Пароль</label>
                 <input
-                  id="password"
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
+                  className="form-input"
                   required
                 />
-              </td>
-              <td>
-                <button type="submit" disabled={submitting}>
-                  {submitting ? 'Создание...' : 'Создать пользователя'}
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </form>
+              </div>
+            </div>
+            <div className="form-button-group">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="form-button full-width"
+              >
+                {submitting ? 'Создание...' : 'Создать пользователя'}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Список пользователей - снизу */}
+        <div className="users-section">
+          <h2 className="section-title">Список пользователей</h2>
+          
+          {loading ? (
+            <div className="loading">Загрузка...</div>
+          ) : users.length === 0 ? (
+            <div className="empty-state">Пользователи не найдены</div>
+          ) : (
+            <div className="table-wrapper">
+              <table className="users-table">
+                <thead>
+                  <tr>
+                    <th>Имя</th>
+                    <th>Фамилия</th>
+                    <th>Логин</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => {
+                    const userKey = user.id ?? user.login
+                    return (
+                      <tr key={userKey}>
+                        <td>{user.name || '-'}</td>
+                        <td>{user.surname || '-'}</td>
+                        <td>{user.login}</td>
+                        <td>
+                          <select
+                            value={roleChanges[userKey] ?? user.role ?? 'user'}
+                            onChange={(event) => handleRoleChange(userKey, event.target.value)}
+                            disabled={currentUser?.login === user.login}
+                            className="role-select"
+                          >
+                            <option value="user">user</option>
+                            <option value="admin">admin</option>
+                          </select>
+                        </td>
+                        <td>
+                          {currentUser?.login === user.login ? (
+                            <span className="current-user">Это Вы!</span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleRoleSubmit(user)}
+                              disabled={updatingUserId === userKey}
+                              className="table-button"
+                            >
+                              {updatingUserId === userKey ? 'Сохранение...' : 'Сохранить статус'}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

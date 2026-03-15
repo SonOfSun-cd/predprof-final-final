@@ -42,8 +42,21 @@ export default function Index() {
         console.log('Файл отправлен:', inputRef.current?.files[0]);
     };
 
+    const handleLogout = useCallback(() => {
+        // убрать токен/данные пользователя
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        // перенаправить на страницу логина
+        window.location.href = '/auth/login';
+    }, []);
+
     return (
         <div className="app-container">
+            <div className="header-row">
+                <button className="logout-btn" onClick={handleLogout}>
+                    Выйти из аккаунта
+                </button>
+            </div>
             <div className="file_get_box">
                 <h1>Выберите файл для расшифровки</h1>
                 <div className="file_get">
