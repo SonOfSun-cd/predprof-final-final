@@ -1,4 +1,3 @@
-/* Общие стили */
 * {
     margin: 0;
     padding: 0;
@@ -14,15 +13,15 @@ body {
 
 .app-container {
     position: relative;
-    min-height: 100vh;
+    min-height: 80vh;
     display: flex;
-    align-items: center; /* центрирует контент */
+    align-items: center; 
     justify-content: center;
     padding: 2rem;
 }
 
 .header-row {
-    position: fixed; /* или absolute, родитель с position: relative */
+    position: fixed; 
     top: 1rem;
     right: 1rem;
     display: flex;
@@ -49,7 +48,6 @@ body {
     transform: scale(0.98);
 }
 
-/* Стили для страницы загрузки файла */
 .file_get_box {
     background: #404040;
     border: 1px solid #606060;
@@ -127,16 +125,6 @@ body {
     background: #909090;
 }
 
-.data_input {
-    min-height: 80px;
-    background: #505050;
-    border: 1px solid #707070;
-    width: 100%;
-    padding: 1rem;
-    color: #ffffff;
-}
-
-/* Стили для страницы логина */
 .auth-container {
     max-width: 400px;
     width: 100%;
@@ -216,7 +204,7 @@ body {
     background: #909090;
 }
 
-/* Стили для страницы пользователей */
+
 .users-container {
     background: #404040;
     border: 1px solid #606060;
@@ -355,4 +343,96 @@ body {
 .form-button.full-width {
     width: 100%;
     max-width: 250px;
+}
+
+.TopBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2e2e2e;
+    border-bottom: 1px solid #606060;
+    padding: 0.75rem 1.5rem;
+    height: 56px;
+}
+
+.TopBar h1 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.TopBar h1 a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.topbar-user {
+    color: #dcdcdc;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.topbar-btn {
+    background: #707070;
+    color: #fff;
+    border: 1px solid #909090;
+    padding: 0.45rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.topbar-btn:hover {
+    background: #909090;
+}
+
+.logout-btn {
+    background: #b44;
+    border-color: #d55;
+}
+
+.logout-btn:hover {
+    background: #c55;
+}
+
+.otherdata {
+    padding-top: 72px; /* чтобы контент не перекрывался фиксированным TopBar */
+}
+
+.action-cell {
+  text-align: right;
+  vertical-align: middle;
+  padding-right: 1rem;
+}
+
+.action-buttons {
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center; /* убрал `align-items: right` */
+  gap: 0.5rem; /* небольшой отступ между кнопками */
+}
+
+.delete-btn {
+  background: #a00;
+  border-color: #c00;
+  color: #fff;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: #c33;
+}
+
+.delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

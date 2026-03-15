@@ -12,12 +12,9 @@ function Router() {
         <Routes>
           <Route path="/*" element={<TopBar/>}>
             <Route path="" element={<Index/>}/>
-            <Route path="auth/*">
-              <Route path="login" element={<Login/>}/>
-              <Route path="users" element={<Users/>}/> 
-            </Route>
-
+            <Route path="auth/users" element={<Users/>}/>
           </Route>
+          <Route path="/auth/login" element={<Login/>}/>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AuthProvider>

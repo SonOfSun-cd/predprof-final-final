@@ -55,14 +55,13 @@ export default function Index() {
     if (!user) {
         return <Navigate to="/auth/login" replace />
     }
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/auth/login';
+    }, []);
 
     return (
         <div className="app-container">
-            <div className="header-row">
-                <button className="logout-btn" onClick={handleLogout}>
-                    Выйти из аккаунта
-                </button>
-            </div>
             <div className="file_get_box">
                 <h1>Выберите файл для расшифровки</h1>
                 <div className="file_get">

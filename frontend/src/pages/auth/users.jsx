@@ -17,6 +17,17 @@ export default function Users() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  useEffect(() => {
+    if (!error && !success) return
+
+    const timer = setTimeout(() => {
+      setError('')
+      setSuccess('')
+    }, 5000)
+
+    return () => clearTimeout(timer)
+  }, [error, success])
+
   const loadUsers = async () => {
     setLoading(true)
     setError('')
@@ -114,6 +125,9 @@ export default function Users() {
     }
   }
 
+  const handleDeleteUser = (user) => {
+  }
+
   return (
     <div className="app-container">
       <div className="users-container">
@@ -122,7 +136,6 @@ export default function Users() {
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
 
-        {/* Создание пользователя - сверху */}
         <div className="create-section">
           <h2 className="section-title">Создать пользователя</h2>
           
@@ -181,7 +194,6 @@ export default function Users() {
           </form>
         </div>
 
-        {/* Список пользователей - снизу */}
         <div className="users-section">
           <h2 className="section-title">Список пользователей</h2>
           
@@ -220,18 +232,28 @@ export default function Users() {
                             <option value="admin">admin</option>
                           </select>
                         </td>
-                        <td>
+                        <td className="action-cell">
                           {currentUser?.login === user.login ? (
                             <span className="current-user">Это Вы!</span>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => handleRoleSubmit(user)}
-                              disabled={updatingUserId === userKey}
-                              className="table-button"
-                            >
-                              {updatingUserId === userKey ? 'Сохранение...' : 'Сохранить статус'}
-                            </button>
+                            <div className="action-buttons">
+                              <button
+                                type="button"
+                                onClick={() => handleRoleSubmit(user)}
+                                disabled={updatingUserId === userKey}
+                                className="table-button"
+                              >
+                                {updatingUserId === userKey ? 'Сохранение...' : 'Сохранить'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteUser(user)}
+                                disabled={updatingUserId === userKey}
+                                className="table-button delete-btn"
+                              >
+                                Удалить
+                              </button>
+                            </div>
                           )}
                         </td>
                       </tr>
