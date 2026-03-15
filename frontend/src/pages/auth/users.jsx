@@ -126,7 +126,6 @@ export default function Users() {
   }
 
   const handleDeleteUser = (user) => {
-    // ничего не делаем
   }
 
   return (
@@ -137,7 +136,6 @@ export default function Users() {
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
 
-        {/* Создание пользователя - сверху */}
         <div className="create-section">
           <h2 className="section-title">Создать пользователя</h2>
           
@@ -196,7 +194,6 @@ export default function Users() {
           </form>
         </div>
 
-        {/* Список пользователей - снизу */}
         <div className="users-section">
           <h2 className="section-title">Список пользователей</h2>
           

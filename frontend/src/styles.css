@@ -1,4 +1,3 @@
-/* Общие стили */
 * {
     margin: 0;
     padding: 0;
@@ -16,13 +15,13 @@ body {
     position: relative;
     min-height: 80vh;
     display: flex;
-    align-items: center; /* центрирует контент */
+    align-items: center; 
     justify-content: center;
     padding: 2rem;
 }
 
 .header-row {
-    position: fixed; /* или absolute, родитель с position: relative */
+    position: fixed; 
     top: 1rem;
     right: 1rem;
     display: flex;
@@ -49,7 +48,6 @@ body {
     transform: scale(0.98);
 }
 
-/* Стили для страницы загрузки файла */
 .file_get_box {
     background: #404040;
     border: 1px solid #606060;
@@ -127,7 +125,6 @@ body {
     background: #909090;
 }
 
-/* Стили для страницы логина */
 .auth-container {
     max-width: 400px;
     width: 100%;
@@ -207,7 +204,7 @@ body {
     background: #909090;
 }
 
-/* Стили для страницы пользователей */
+
 .users-container {
     background: #404040;
     border: 1px solid #606060;

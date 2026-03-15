@@ -43,10 +43,8 @@ export default function Index() {
     };
 
     const handleLogout = useCallback(() => {
-        // убрать токен/данные пользователя
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        // перенаправить на страницу логина
         window.location.href = '/auth/login';
     }, []);
 
