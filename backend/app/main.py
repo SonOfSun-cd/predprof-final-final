@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List
 import models, schemas
 import time
-from api import auth_router
+from api import auth_router, model_prediction_router
 
 for i in range(30):
     try:
@@ -17,6 +17,7 @@ for i in range(30):
 
 app = FastAPI()
 app.include_router(auth_router.router)
+app.include_router(model_prediction_router.router)
 
 from set_models import done
 

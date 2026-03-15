@@ -1,48 +1,60 @@
-import React, { useState, useRef, useCallback } from 'react';
-import axios from 'axios';
-import '../styles.css';
+import React, { useState, useRef, useCallback } from 'react'
+import { Navigate } from 'react-router-dom'
+import { useAuth } from './auth/auth_context.jsx'
+import '../styles.css'
 
 export default function Index() {
-    const inputRef = useRef(null);
-    const [dragActive, setDragActive] = useState(false);
-    const [fileName, setFileName] = useState('');
+    const inputRef = useRef(null)
+    const [dragActive, setDragActive] = useState(false)
+    const [fileName, setFileName] = useState('')
+    const { user, loading, logout } = useAuth()
 
     const handleDrag = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault()
+        e.stopPropagation()
         if (e.type === 'dragenter' || e.type === 'dragover') {
-            setDragActive(true);
+            setDragActive(true)
         } else if (e.type === 'dragleave') {
-            setDragActive(false);
+            setDragActive(false)
         }
-    }, []);
+    }, [])
 
     const handleDrop = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
+        e.preventDefault()
+        e.stopPropagation()
+        setDragActive(false)
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            inputRef.current.files = e.dataTransfer.files;
-            setFileName(e.dataTransfer.files[0].name);
+            inputRef.current.files = e.dataTransfer.files
+            setFileName(e.dataTransfer.files[0].name)
         }
-    }, []);
+    }, [])
 
     const handleClick = useCallback((e) => {
-        e.preventDefault();
-        inputRef.current?.click();
-    }, []);
+        e.preventDefault()
+        inputRef.current?.click()
+    }, [])
 
     const handleChange = useCallback((e) => {
         if (e.target.files && e.target.files[0]) {
-            setFileName(e.target.files[0].name);
+            setFileName(e.target.files[0].name)
         }
-    }, []);
+    }, [])
 
     const handleTranscribe = () => {
-        console.log('Файл отправлен:', inputRef.current?.files[0]);
-    };
+        console.log('Файл отправлен:', inputRef.current?.files[0])
+    }
 
     const handleLogout = useCallback(() => {
+        logout()
+    }, [logout])
+
+    if (loading) {
+        return null
+    }
+
+    if (!user) {
+        return <Navigate to="/auth/login" replace />
+    }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/auth/login';
@@ -91,5 +103,5 @@ export default function Index() {
                 </div>
             </div>
         </div>
-    );
+    )
 }
