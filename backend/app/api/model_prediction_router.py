@@ -5,13 +5,48 @@ import traceback
 import numpy as np
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import Dense as KerasDense
 
 import auth
 import models
 
 router = APIRouter(prefix="/api/predict", tags=["Prediction"])
+MODEL_PATH = os.getenv("MODEL_PATH", "data/my_model.h5")
 
-MODEL_PATH = os.getenv("MODEL_PATH", "app/data/model.h5")
+
+class DenseWithQuantizationConfig(KerasDense):
+    def __init__(self, *args, quantization_config=None, **kwargs):
+        self.quantization_config = quantization_config
+        super().__init__(*args, **kwargs)
+
+    def get_config(self):
+        config = super().get_config()
+        config["quantization_config"] = self.quantization_config
+        return config
+
+
+def decode_hashed_labels(values):
+    values = np.asarray(values)
+
+    if values.size == 0:
+        return np.array([], dtype=int)
+
+    # если данные уже numeric
+    if np.issubdtype(values.dtype, np.integer) or np.issubdtype(values.dtype, np.floating):
+        return values.astype(int)
+
+    # Приводим bytes->str, если нужно
+    if values.dtype.kind == "S" or values.dtype.kind == "U":
+        values = values.astype(str)
+    else:
+        values = np.asarray([str(v) for v in values], dtype=str)
+
+    # из обучающего скрипта: метки по suffix
+    suffixes = np.array([v[32:] if len(v) >= 32 else v for v in values], dtype=str)
+    unique_suffixes = np.sort(np.unique(suffixes))
+    suffix_to_index = {s: i for i, s in enumerate(unique_suffixes)}
+
+    return np.array([suffix_to_index[s] for s in suffixes], dtype=int)
 
 
 def extract_labels(values):
@@ -21,8 +56,11 @@ def extract_labels(values):
         return np.array([int(values)])
 
     if values.ndim == 1:
-        return values.astype(int)
+        if np.issubdtype(values.dtype, np.integer) or np.issubdtype(values.dtype, np.floating):
+            return values.astype(int)
+        return decode_hashed_labels(values)
 
+    # one-hot или распределения
     return np.argmax(values, axis=1).astype(int)
 
 
@@ -76,30 +114,28 @@ async def predict(
             detail=f"Не удалось прочитать .npz файл: {str(error)}",
         )
 
-    if "test_x" not in npz_data or "test_y" not in npz_data:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="В .npz файле должны быть ключи test_x и test_y",
-        )
-
-    try:
+    # заменяем строгую проверку на test_x/test_y таким образом:
+    if "test_x" in npz_data and "test_y" in npz_data:
         test_x = npz_data["test_x"]
         test_y = npz_data["test_y"]
-        train_y = npz_data["train_y"] if "train_y" in npz_data else None
-
-        class_names = None
-        if "class_names" in npz_data:
-            class_names = [str(item) for item in npz_data["class_names"].tolist()]
-    except Exception as error:
-        print("Ошибка извлечения данных из .npz:")
-        traceback.print_exc()
+    elif "valid_x" in npz_data and "valid_y" in npz_data:
+        test_x = npz_data["valid_x"]
+        test_y = npz_data["valid_y"]
+    else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Ошибка обработки данных из .npz: {str(error)}",
+            detail="В .npz файле должны быть ключи test_x/test_y или valid_x/valid_y",
         )
 
+    train_y = npz_data["train_y"] if "train_y" in npz_data else None
+    class_names = [str(item) for item in npz_data["class_names"].tolist()] if "class_names" in npz_data else None
+
     try:
-        model = load_model(MODEL_PATH)
+        model = load_model(
+            MODEL_PATH,
+            compile=False,
+            custom_objects={"Dense": DenseWithQuantizationConfig},
+        )
     except Exception as error:
         print("Ошибка загрузки модели:")
         traceback.print_exc()
@@ -121,6 +157,8 @@ async def predict(
     try:
         predicted_labels = np.argmax(predictions, axis=1).astype(int)
         true_labels = extract_labels(test_y)
+        if len(predicted_labels) != len(true_labels):
+            raise ValueError(f"Несовпадение длины: predictions={len(predicted_labels)}, true={len(true_labels)}")
         confidences = np.max(predictions, axis=1)
 
         per_record_accuracy = []
